@@ -1,0 +1,97 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login - Pothy's mart</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Inter', sans-serif; overflow-x: hidden; }
+
+#loginPage {
+  background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)),
+              url('https://images.unsplash.com/photo-1503264116251-35a269479413?auto=format&fit=crop&w=1600&q=80') 
+              center/cover no-repeat fixed;
+  height: 100vh; display: flex; justify-content: center; align-items: center;
+}
+.login-container {
+  max-width: 380px; background: rgba(238, 223, 223, 0.1);
+  padding: 40px; border-radius: 15px; text-align: center;
+  backdrop-filter: blur(10px); box-shadow: 0 0 15px rgba(0,0,0,0.3);
+}
+.login-container h2 { color: white; margin-bottom: 20px; }
+.login-container input {
+  width: 100%; padding: 12px; margin: 10px 0;
+  border-radius: 8px; border: none; outline: none;
+}
+.login-container button {
+  width: 100%; padding: 12px;
+  background: linear-gradient(45deg, #ff4b5c, #ff0000);
+  color: rgb(247, 239, 239); border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s;
+}
+.login-container button:hover {
+  transform: scale(1.05);
+  background: linear-gradient(45deg, #ff0000, #cc0000);
+}
+.login-container a {
+  color: white; display: block; margin-top: 15px; text-decoration: underline;
+}
+</style>
+</head>
+<body>
+
+<div id="loginPage">
+  <div class="login-container">
+    <h2>Login</h2>
+    <input type="email" id="email" placeholder="Enter Gmail" required>
+    <input type="password" id="password" placeholder="Enter Password" required>
+    <button onclick="register()">Sign In</button>
+    <a href="signup.html">Don't have an account ? Create it </a>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyBVFamqLsaZhCxqchkG3zIcXVh6RX6mTag",
+  authDomain: "pothys-mart.firebaseapp.com",
+  projectId: "pothys-mart",
+  storageBucket: "pothys-mart.firebasestorage.app",
+  messagingSenderId: "749377093185",
+  appId: "1:749377093185:web:02d6b173833c397a7490c0",
+  measurementId: "G-HEZS2CVYFB"
+};
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+function register(){
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value.trim();
+  if(email && password){
+    auth.signInWithEmailAndPassword(email,password)
+    .then(()=>{ storeUser(email); window.location.href = "events.html"; })
+    .catch((error)=>{
+      if(error.code==="auth/user-not-found"){
+        auth.createUserWithEmailAndPassword(email,password)
+        .then(()=>{ storeUser(email); window.location.href = "events.html"; })
+        .catch(err=>alert(err.message));
+      } else alert(error.message);
+    });
+  } else alert("Enter Gmail and Password");
+}
+
+function storeUser(email){
+  const user = auth.currentUser;
+  if(user){
+    db.collection("users").doc(user.uid).set({ email: email, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+  }
+}
+</script>
+</body>
+</html>
