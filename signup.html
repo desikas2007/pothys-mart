@@ -1,0 +1,101 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sign Up - Food Stall</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Inter', sans-serif; overflow-x: hidden; }
+
+#signupPage {
+  background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)),
+              url('https://images.unsplash.com/photo-1503264116251-35a269479413?auto=format&fit=crop&w=1600&q=80') 
+              center/cover no-repeat fixed;
+  height: 100vh; display: flex; justify-content: center; align-items: center;
+}
+.signup-container {
+  max-width: 380px; background: rgba(255,255,255,0.1);
+  padding: 40px; border-radius: 15px; text-align: center;
+  backdrop-filter: blur(10px); box-shadow: 0 0 15px rgba(0,0,0,0.3);
+}
+.signup-container h2 { color: white; margin-bottom: 20px; }
+.signup-container input {
+  width: 100%; padding: 12px; margin: 10px 0;
+  border-radius: 8px; border: none; outline: none;
+}
+.signup-container button {
+  width: 100%; padding: 12px;
+  background: linear-gradient(45deg, #4CAF50, #2E7D32);
+  color: white; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s;
+}
+.signup-container button:hover {
+  transform: scale(1.05);
+  background: linear-gradient(45deg, #2E7D32, #1B5E20);
+}
+.signup-container a {
+  color: white; display: block; margin-top: 15px; text-decoration:none;
+}
+.signup-container a .text{
+  color: rgba(216, 16, 16, 0.719);
+  font-weight: 600;
+}
+</style>
+</head>
+<body>
+
+<div id="signupPage">
+  <div class="signup-container">
+    <h2>Create Account</h2>
+    <input type="email" id="signupEmail" placeholder="Enter Gmail" required>
+    <input type="password" id="signupPassword" placeholder="Enter Password" required>
+    <button onclick="signUp()">Sign Up</button>
+    <a href="index.html">Already have an account ?<span class="text">   Login</span> </a>
+  
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+
+<script>
+const firebaseConfig = {
+ apiKey: "AIzaSyBVFamqLsaZhCxqchkG3zIcXVh6RX6mTag",
+  authDomain: "pothys-mart.firebaseapp.com",
+  projectId: "pothys-mart",
+  storageBucket: "pothys-mart.firebasestorage.app",
+  messagingSenderId: "749377093185",
+  appId: "1:749377093185:web:02d6b173833c397a7490c0",
+  measurementId: "G-HEZS2CVYFB"
+};
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+function signUp(){
+  const email = document.getElementById("signupEmail").value.trim();
+  const password = document.getElementById("signupPassword").value.trim();
+
+  if(email && password){
+    auth.createUserWithEmailAndPassword(email,password)
+    .then((userCredential)=>{
+      const user = userCredential.user;
+      db.collection("users").doc(user.uid).set({
+        email: email,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      }).then(()=>{
+        alert("Account created successfully!");
+        window.location.href = "index.html";
+      });
+    })
+    .catch(err=>alert(err.message));
+  } else {
+    alert("Enter both email and password");
+  }
+}
+</script>
+</body>
+</html>
